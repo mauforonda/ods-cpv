@@ -130,7 +130,9 @@ function municipio_seleccion(municipio, tipo) {
   if (municipio) {
     const valor = datos[municipio.id][tipo][indicador];
     const meta = datos[municipio.id].municipio;
-    const format = d3.format(tipo == "diferencia" ? "+" : "" + definicion.format);
+    const format = d3.format(
+      tipo == "diferencia" ? "+" : "" + definicion.format
+    );
     return htl.html`<mensaje>
       <valor>${format(valor)}</valor>
       <unidad>${definicion.unidad}</unidad>
@@ -200,6 +202,11 @@ const municipio_diferencia = Generators.input(mapa_diferencia);
 ```
 
 ```js
+const municipio_integrado =
+  municipio_actual ?? municipio_previo ?? municipio_diferencia;
+```
+
+```js
 function draw_card(titulo, subtitulo, color_definicion, mapa, municipio, tipo) {
   if (definicion.disponibles.includes(tipo)) {
     const leyenda = leyenda_lineal(color_definicion, definicion.format);
@@ -236,13 +243,13 @@ const disclaimer = definicion.disponibles.includes(2012)
     </header>
     <cards>
       <card>
-      ${draw_card("en 2024", "con datos del Censo 2024", definicion.estado, mapa_actual, municipio_actual, 2024)}
+      ${draw_card("en 2024", "con datos del Censo 2024", definicion.estado, mapa_actual, municipio_integrado, 2024)}
       </card>
       <card>
-      ${draw_card("en 2012", "con datos del Censo 2012", definicion.estado, mapa_previo, municipio_previo, 2012)}
+      ${draw_card("en 2012", "con datos del Censo 2012", definicion.estado, mapa_previo, municipio_integrado, 2012)}
       </card>
       <card>
-      ${draw_card("cambios desde 2012", "2024 - 2012", definicion.diferencia, mapa_diferencia, municipio_diferencia, "diferencia")}
+      ${draw_card("cambios desde 2012", "2024 - 2012", definicion.diferencia, mapa_diferencia, municipio_integrado, "diferencia")}
       </card>
     </cards>
     ${disclaimer}

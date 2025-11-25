@@ -107,13 +107,17 @@ estado {
 
   titulo,
   subtitulo {
-    font-style: italic;
     font-size: 0.9rem;
     font-family: serif;
     opacity: 0.7;
     max-width: 600px;
   }
+  
+  titulo {
+    font-weight: 600;
+  }
   subtitulo {
+    font-style: italic;
     font-size: 0.7rem;
   }
   leyenda {
@@ -140,7 +144,7 @@ estado {
         display: block;
       }
       valor {
-        font-size: 4rem;
+        font-size: 3.5rem;
         font-weight: 600;
         line-height: 1.2;
       }
