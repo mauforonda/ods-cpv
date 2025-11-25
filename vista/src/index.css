@@ -1,0 +1,132 @@
+:root {
+  --header-height: 80px;
+  --background: #fbfbfb;
+  --soft: #a0a0a0;
+  --strong: #494949;
+}
+
+#observablehq-main,
+#observablehq-center {
+  margin: 0;
+  min-height: 100vh;
+}
+
+menu {
+  padding-left: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  titulo {
+    padding: 0 10px;
+    text-align: center;
+    font-size: .9rem;
+    margin-bottom: 10px;
+    opacity: .9;
+  }
+  select,
+  input {
+    background-color: var(--background);
+    border-radius: 5px;
+    border: 1px dotted var(--soft);
+    color: var(--strong) !important;
+    text-align: center;
+    padding: 5px;
+    scrollbar-width: none;
+    &:hover {
+      box-shadow: 0 4px 12px rgba(136, 160, 195, 0.1);
+    }
+  }
+}
+
+card {
+  display: block;
+  margin: 30px 0;
+  color: var(--strong) !important;
+}
+
+header {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  margin: 0 10px;
+
+  titulo {
+    font-size: 2rem;
+    font-weight: 650;
+  }
+
+  subtitulo {
+    font-size: 0.9rem;
+    font-family: sans-serif;
+    opacity: 0.7;
+    max-width: 500px;
+  }
+}
+
+estado {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  titulo {
+    font-size: 0.9rem;
+    font-family: sans-serif;
+    opacity: 0.7;
+    max-width: 600px;
+  }
+  leyenda {
+    line {
+      stroke: #fff;
+    }
+    text {
+      opacity: 0.7;
+    }
+  }
+  mapa {
+    position: relative;
+    mensaje {
+      position: absolute;
+      z-index: -1;
+      top: 7%;
+      right: 10%;
+      font-family: sans-serif;
+      opacity: 0.2;
+      text-align: right;
+      * {
+        display: block;
+      }
+      valor {
+        font-size: 4rem;
+        font-weight: 600;
+        line-height: 1.2;
+      }
+      municipio {
+        max-width: 200px;
+        font-size: 0.8rem;
+        font-weight: 600;
+      }
+      departamento {
+        font-size: 0.7rem;
+        font-weight: 500;
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 768px) {
+  mensaje {
+    right: 2% !important;
+    valor {
+      font-size: 2rem !important;
+    }
+    municipio {
+      max-width: 150px !important;
+      font-size: 0.7rem !important;
+    }
+  }
+}
