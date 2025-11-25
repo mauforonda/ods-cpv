@@ -111,11 +111,6 @@ const anio = 2024;
 ```
 
 ```js
-const mapa_actual = draw_mapa("2024");
-const municipio_actual = Generators.input(mapa_actual);
-```
-
-```js
 function leyenda_lineal(color_definicion, format) {
   return Plot.legend({
     opacity: 0.8,
@@ -135,10 +130,11 @@ function municipio_seleccion(municipio, tipo) {
   if (municipio) {
     const valor = datos[municipio.id][tipo][indicador];
     const meta = datos[municipio.id].municipio;
-    const format = d3.format(definiciones[indicador].format);
+    const format = d3.format(tipo == "diferencia" ? "+" : "" + definicion.format);
     return htl.html`<mensaje>
       <valor>${format(valor)}</valor>
-      <municipio>${meta.municipio}</municipio>
+      <unidad>${definicion.unidad}</unidad>
+      <municipio><span>en </span>${meta.municipio}</municipio>
       <departamento>${meta.departamento}</departamento>
     </mensaje>`;
   } else {
@@ -148,7 +144,7 @@ function municipio_seleccion(municipio, tipo) {
 ```
 
 ```js
-function draw_mapa(tipo) {
+function draw_mapa(tipo, color_definicion) {
   const mapa = Plot.plot({
     marginTop: 30,
     marginBottom: 0,
@@ -161,7 +157,7 @@ function draw_mapa(tipo) {
     },
     color: {
       interpolate: "hcl",
-      ...definicion[tipo],
+      ...color_definicion,
     },
 
     marks: [
@@ -189,30 +185,43 @@ function draw_mapa(tipo) {
 ```
 
 ```js
-const mapa_diferencia = draw_mapa("diferencia");
+const mapa_actual = draw_mapa("2024", definicion.estado);
+const municipio_actual = Generators.input(mapa_actual);
+```
+
+```js
+const mapa_previo = draw_mapa("2012", definicion.estado);
+const municipio_previo = Generators.input(mapa_previo);
+```
+
+```js
+const mapa_diferencia = draw_mapa("diferencia", definicion.diferencia);
 const municipio_diferencia = Generators.input(mapa_diferencia);
 ```
 
 ```js
-function draw_card(tipo, mapa, municipio, titulo) {
-  if (Object.keys(definicion).includes(tipo)) {
-    const leyenda = leyenda_lineal(definicion[tipo], definicion.format);
+function draw_card(titulo, subtitulo, color_definicion, mapa, municipio, tipo) {
+  if (definicion.disponibles.includes(tipo)) {
+    const leyenda = leyenda_lineal(color_definicion, definicion.format);
     return htl.html`<estado>
-      <titulo>${titulo}</titulo>
-      <leyenda>${leyenda}</leyenda>
-      <mapa>
-        ${mapa}
-        ${municipio_seleccion(municipio, tipo)}
-      </mapa>
-    </estado>`;
+    <titulo>${titulo}</titulo>
+    <subtitulo>${subtitulo}</subtitulo>
+    <leyenda>${leyenda}</leyenda>
+    <mapa>
+      ${mapa}
+      ${municipio_seleccion(municipio, tipo)}
+    </mapa>
+  </estado>`;
   } else {
     return htl.html`<div></div>`;
-    return htl.html`<estado>
-      <titulo>${titulo}</titulo>
-      <subtitulo>sin datos</subtitulo>
-    </estado>`;
   }
 }
+```
+
+```js
+const disclaimer = definicion.disponibles.includes(2012)
+  ? htl.html`<div></div>`
+  : htl.html`<disclaimer>( Sin datos para 2012 )</disclaimer>`;
 ```
 
 <menu>
@@ -227,12 +236,16 @@ function draw_card(tipo, mapa, municipio, titulo) {
     </header>
     <cards>
       <card>
-      ${draw_card("2024", mapa_actual, municipio_actual, "en 2024")}
+      ${draw_card("en 2024", "con datos del Censo 2024", definicion.estado, mapa_actual, municipio_actual, 2024)}
       </card>
       <card>
-      ${draw_card("diferencia", mapa_diferencia, municipio_diferencia, "desde 2012")}
+      ${draw_card("en 2012", "con datos del Censo 2012", definicion.estado, mapa_previo, municipio_previo, 2012)}
+      </card>
+      <card>
+      ${draw_card("cambios desde 2012", "2024 - 2012", definicion.diferencia, mapa_diferencia, municipio_diferencia, "diferencia")}
       </card>
     </cards>
+    ${disclaimer}
   </contenido>
 </cuerpo>
 <footer>
