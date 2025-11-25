@@ -1,4 +1,8 @@
-Respaldo para estimaciones de indicadores de los ODS con datos del Censo 2024 en Bolivia. Puedes consultar los datos oficiales en [el portal del Instituto Nacional de Estadística](https://fichas.ine.gob.bo/#/web/ods-cpv). Este respositorio incluye:
+> Respaldo para estimaciones de indicadores de los ODS con datos del Censo 2024 en Bolivia. 
+
+Puedes [explorar mapas a nivel municipal](https://mauforonda.github.io/ods-cpv/) y consultar [la fuente original](https://fichas.ine.gob.bo/#/web/ods-cpv).
+
+Este respositorio incluye:
 
 - [Un cuaderno de computación](descarga.ipynb) para descargar todos los valores disponibles.
 - [Una tabla csv](datos.csv) con una fila para cada indicador y municipio, que incluye columnas para valores en 2012 y 2024 además de códigos de municipio.

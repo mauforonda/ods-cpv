@@ -45,6 +45,11 @@ const datos = (async () => {
       }
     });
 
+    if (obj["2024"] !== undefined && obj["2012"] !== undefined) {
+      if (!acc[munId].diferencia) acc[munId].diferencia = {};
+      acc[munId].diferencia[obj.indicador] = obj["2024"] - obj["2012"];
+    }
+
     return acc;
   }, {});
 })();
@@ -106,68 +111,33 @@ const anio = 2024;
 ```
 
 ```js
-const mapa_actual = Plot.plot({
-  marginTop: 30,
-  marginBottom: 0,
-  height: 500,
-  width: 500,
-
-  projection: {
-    type: "mercator",
-    domain: features,
-  },
-  color: {
-    range: definicion.colormap,
-    domain: definicion.domain,
-    interpolate: "hcl",
-  },
-
-  marks: [
-    Plot.geo(features.features, {
-      fill: (d) => datos[d.id][anio][indicador],
-      fillOpacity: 0.8,
-      stroke: colors.frame.background,
-      strokeWidth: 0.4,
-    }),
-
-    Plot.geo(
-      features.features,
-      Plot.pointer(
-        Plot.centroid({
-          fill: (d) => datos[d.id][anio][indicador],
-          stroke: colors.frame.background,
-          strokeWidth: 2.5,
-        })
-      )
-    ),
-  ],
-});
-const municipio = Generators.input(mapa_actual);
+const mapa_actual = draw_mapa("2024");
+const municipio_actual = Generators.input(mapa_actual);
 ```
 
 ```js
-function leyenda_lineal() {
+function leyenda_lineal(color_definicion, format) {
   return Plot.legend({
     opacity: 0.8,
     margin: 0,
     color: {
       type: "linear",
       interpolate: "hcl",
-      range: definicion.colormap,
-      domain: definicion.domain,
-      tickFormat: d3.format(definicion.format),
+      tickFormat: d3.format(format),
+      ...color_definicion,
     },
   });
 }
 ```
 
 ```js
-function mensaje_actual(municipio) {
+function municipio_seleccion(municipio, tipo) {
   if (municipio) {
-    const valor = datos[municipio.id][2024][indicador];
+    const valor = datos[municipio.id][tipo][indicador];
     const meta = datos[municipio.id].municipio;
+    const format = d3.format(definiciones[indicador].format);
     return htl.html`<mensaje>
-      <valor>${valor}</valor>
+      <valor>${format(valor)}</valor>
       <municipio>${meta.municipio}</municipio>
       <departamento>${meta.departamento}</departamento>
     </mensaje>`;
@@ -177,23 +147,96 @@ function mensaje_actual(municipio) {
 }
 ```
 
+```js
+function draw_mapa(tipo) {
+  const mapa = Plot.plot({
+    marginTop: 30,
+    marginBottom: 0,
+    height: 500,
+    width: 500,
+
+    projection: {
+      type: "mercator",
+      domain: features,
+    },
+    color: {
+      interpolate: "hcl",
+      ...definicion[tipo],
+    },
+
+    marks: [
+      Plot.geo(features.features, {
+        fill: (d) => datos[d.id][tipo][indicador],
+        fillOpacity: 0.8,
+        stroke: colors.frame.background,
+        strokeWidth: 0.4,
+      }),
+
+      Plot.geo(
+        features.features,
+        Plot.pointer(
+          Plot.centroid({
+            fill: (d) => datos[d.id][tipo][indicador],
+            stroke: colors.frame.background,
+            strokeWidth: 2.5,
+          })
+        )
+      ),
+    ],
+  });
+  return mapa;
+}
+```
+
+```js
+const mapa_diferencia = draw_mapa("diferencia");
+const municipio_diferencia = Generators.input(mapa_diferencia);
+```
+
+```js
+function draw_card(tipo, mapa, municipio, titulo) {
+  if (Object.keys(definicion).includes(tipo)) {
+    const leyenda = leyenda_lineal(definicion[tipo], definicion.format);
+    return htl.html`<estado>
+      <titulo>${titulo}</titulo>
+      <leyenda>${leyenda}</leyenda>
+      <mapa>
+        ${mapa}
+        ${municipio_seleccion(municipio, tipo)}
+      </mapa>
+    </estado>`;
+  } else {
+    return htl.html`<div></div>`;
+    return htl.html`<estado>
+      <titulo>${titulo}</titulo>
+      <subtitulo>sin datos</subtitulo>
+    </estado>`;
+  }
+}
+```
+
 <menu>
   <titulo>Indicadores de desarrollo basados en el Censo 2024</titulo>
   ${indicador_input}
 </menu>
-
-<card>
-  <header>
-    <titulo>${definicion.abreviacion}</titulo>
-    <subtitulo>${definicion.texto}</subtitulo>
-  </header>
-
-  <estado>
-    <titulo>en 2024</titulo>
-    <leyenda>${leyenda_lineal()}</leyenda>
-    <mapa>
-      ${mapa_actual}
-      ${mensaje_actual(municipio)}
-    </mapa>
-  </estado>
-</card>
+<cuerpo>
+  <contenido>
+    <header>
+      <titulo>${definicion.abreviacion}</titulo>
+      <subtitulo>${definicion.texto}</subtitulo>
+    </header>
+    <cards>
+      <card>
+      ${draw_card("2024", mapa_actual, municipio_actual, "en 2024")}
+      </card>
+      <card>
+      ${draw_card("diferencia", mapa_diferencia, municipio_diferencia, "desde 2012")}
+      </card>
+    </cards>
+  </contenido>
+</cuerpo>
+<footer>
+  <fuente>
+  Estimaciones del <a href="https://fichas.ine.gob.bo/#/web/ods-cpv" target="_blank">Instituto Nacional de Estadística</a>, <a href="https://github.com/mauforonda/ods-cpv" target="_blank">descargadas y visualizadas</a> por <a href="https://mauforonda.github.io/" target="_blank">Mauricio Foronda</a>
+  </fuente>
+</footer>
