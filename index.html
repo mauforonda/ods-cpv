@@ -63,7 +63,7 @@
 import {define} from "./_observablehq/client.ce20a9f1.js";
 import {registerFile} from "./_observablehq/stdlib.73a8ec5a.js";
 
-registerFile("./municipios.json", {"name":"./municipios.json","mimeType":"application/json","path":"./_file/municipios.c9eb137b.json","lastModified":1764104689873,"size":184233});
+registerFile("./municipios.json", {"name":"./municipios.json","mimeType":"application/json","path":"./_file/municipios.c9eb137b.json","lastModified":1764105412646,"size":184233});
 
 define({id: "af6cdc76", inputs: ["d3"], outputs: ["indicadores","datos"], body: (d3) => {
 // Cargar datDatos de indicadoreos
@@ -186,12 +186,14 @@ function leyenda_lineal(color_definicion, format) {
 return {leyenda_lineal};
 }});
 
-define({id: "456c8599", inputs: ["datos","indicador","d3","definicion","htl"], outputs: ["municipio_seleccion"], body: (datos,indicador,d3,definicion,htl) => {
+define({id: "899678b8", inputs: ["datos","indicador","d3","definicion","htl"], outputs: ["municipio_seleccion"], body: (datos,indicador,d3,definicion,htl) => {
 function municipio_seleccion(municipio, tipo) {
   if (municipio) {
     const valor = datos[municipio.id][tipo][indicador];
     const meta = datos[municipio.id].municipio;
-    const format = d3.format(tipo == "diferencia" ? "+" : "" + definicion.format);
+    const format = d3.format(
+      tipo == "diferencia" ? "+" : "" + definicion.format
+    );
     return htl.html`<mensaje>
       <valor>${format(valor)}</valor>
       <unidad>${definicion.unidad}</unidad>
@@ -265,6 +267,12 @@ const municipio_diferencia = Generators.input(mapa_diferencia);
 return {mapa_diferencia,municipio_diferencia};
 }});
 
+define({id: "b6e70d63", inputs: ["municipio_actual","municipio_previo","municipio_diferencia"], outputs: ["municipio_integrado"], body: (municipio_actual,municipio_previo,municipio_diferencia) => {
+const municipio_integrado =
+  municipio_actual ?? municipio_previo ?? municipio_diferencia;
+return {municipio_integrado};
+}});
+
 define({id: "0b34a9e5", inputs: ["definicion","leyenda_lineal","htl","municipio_seleccion"], outputs: ["draw_card"], body: (definicion,leyenda_lineal,htl,municipio_seleccion) => {
 function draw_card(titulo, subtitulo, color_definicion, mapa, municipio, tipo) {
   if (definicion.disponibles.includes(tipo)) {
@@ -310,21 +318,21 @@ definicion.texto
 ))
 }});
 
-define({id: "4a4bbe42", mode: "inline", inputs: ["draw_card","definicion","mapa_actual","municipio_actual","display"], body: async (draw_card,definicion,mapa_actual,municipio_actual,display) => {
+define({id: "724d1242", mode: "inline", inputs: ["draw_card","definicion","mapa_actual","municipio_integrado","display"], body: async (draw_card,definicion,mapa_actual,municipio_integrado,display) => {
 display(await(
-draw_card("en 2024", "con datos del Censo 2024", definicion.estado, mapa_actual, municipio_actual, 2024)
+draw_card("en 2024", "con datos del Censo 2024", definicion.estado, mapa_actual, municipio_integrado, 2024)
 ))
 }});
 
-define({id: "4405a285", mode: "inline", inputs: ["draw_card","definicion","mapa_previo","municipio_previo","display"], body: async (draw_card,definicion,mapa_previo,municipio_previo,display) => {
+define({id: "b3f85a22", mode: "inline", inputs: ["draw_card","definicion","mapa_previo","municipio_integrado","display"], body: async (draw_card,definicion,mapa_previo,municipio_integrado,display) => {
 display(await(
-draw_card("en 2012", "con datos del Censo 2012", definicion.estado, mapa_previo, municipio_previo, 2012)
+draw_card("en 2012", "con datos del Censo 2012", definicion.estado, mapa_previo, municipio_integrado, 2012)
 ))
 }});
 
-define({id: "418a5263", mode: "inline", inputs: ["draw_card","definicion","mapa_diferencia","municipio_diferencia","display"], body: async (draw_card,definicion,mapa_diferencia,municipio_diferencia,display) => {
+define({id: "190af4e5", mode: "inline", inputs: ["draw_card","definicion","mapa_diferencia","municipio_integrado","display"], body: async (draw_card,definicion,mapa_diferencia,municipio_integrado,display) => {
 display(await(
-draw_card("cambios desde 2012", "2024 - 2012", definicion.diferencia, mapa_diferencia, municipio_diferencia, "diferencia")
+draw_card("cambios desde 2012", "2024 - 2012", definicion.diferencia, mapa_diferencia, municipio_integrado, "diferencia")
 ))
 }});
 
@@ -339,18 +347,19 @@ disclaimer
 <body>
 <div id="observablehq-center">
 <main id="observablehq-main" class="observablehq">
-<link rel="stylesheet" type="text/css" href="./_file/index.00a27caf.css">
+<link rel="stylesheet" type="text/css" href="./_file/index.bae3cb89.css">
 <div class="observablehq observablehq--block"><!--:af6cdc76:--></div>
 <div class="observablehq observablehq--block"><!--:4fc3cdab:--></div>
 <div class="observablehq observablehq--block"><!--:e3ce09ff:--></div>
 <div class="observablehq observablehq--block"><!--:04e18386:--></div>
 <div class="observablehq observablehq--block"><!--:20fa5508:--></div>
 <div class="observablehq observablehq--block"><!--:c3de57b2:--></div>
-<div class="observablehq observablehq--block"><!--:456c8599:--></div>
+<div class="observablehq observablehq--block"><!--:899678b8:--></div>
 <div class="observablehq observablehq--block"><!--:e150b185:--></div>
 <div class="observablehq observablehq--block"><!--:8d37328f:--></div>
 <div class="observablehq observablehq--block"><!--:154cd381:--></div>
 <div class="observablehq observablehq--block"><!--:e3283b37:--></div>
+<div class="observablehq observablehq--block"><!--:b6e70d63:--></div>
 <div class="observablehq observablehq--block"><!--:0b34a9e5:--></div>
 <div class="observablehq observablehq--block"><!--:d1275129:--></div>
 <menu>
@@ -365,13 +374,13 @@ disclaimer
     </header>
     <cards>
       <card>
-      <observablehq-loading></observablehq-loading><!--:4a4bbe42:-->
+      <observablehq-loading></observablehq-loading><!--:724d1242:-->
       </card>
       <card>
-      <observablehq-loading></observablehq-loading><!--:4405a285:-->
+      <observablehq-loading></observablehq-loading><!--:b3f85a22:-->
       </card>
       <card>
-      <observablehq-loading></observablehq-loading><!--:418a5263:-->
+      <observablehq-loading></observablehq-loading><!--:190af4e5:-->
       </card>
     </cards>
     <observablehq-loading></observablehq-loading><!--:c9479b65:-->
