@@ -15,7 +15,7 @@
 <link rel="modulepreload" href="./_observablehq/client.ce20a9f1.js">
 <link rel="modulepreload" href="./_observablehq/runtime.e080113b.js">
 <link rel="modulepreload" href="./_observablehq/stdlib.73a8ec5a.js">
-<link rel="modulepreload" href="./_import/components/indicadores.c824ee04.js">
+<link rel="modulepreload" href="./_import/components/indicadores.3153d20f.js">
 <link rel="modulepreload" href="./_npm/d3@7.9.0/e780feca.js">
 <link rel="modulepreload" href="./_npm/htl@0.3.1/72f4716c.js">
 <link rel="modulepreload" href="./_observablehq/stdlib/inputs.4ef1d259.js">
@@ -63,7 +63,7 @@
 import {define} from "./_observablehq/client.ce20a9f1.js";
 import {registerFile} from "./_observablehq/stdlib.73a8ec5a.js";
 
-registerFile("./municipios.json", {"name":"./municipios.json","mimeType":"application/json","path":"./_file/municipios.c9eb137b.json","lastModified":1764087189942,"size":184233});
+registerFile("./municipios.json", {"name":"./municipios.json","mimeType":"application/json","path":"./_file/municipios.c9eb137b.json","lastModified":1764103989954,"size":184233});
 
 define({id: "af6cdc76", inputs: ["d3"], outputs: ["indicadores","datos"], body: (d3) => {
 // Cargar datDatos de indicadoreos
@@ -111,7 +111,7 @@ return {indicadores,datos};
 }});
 
 define({id: "4fc3cdab", outputs: ["definiciones"], body: async () => {
-const {definiciones} = await import("./_import/components/indicadores.c824ee04.js");
+const {definiciones} = await import("./_import/components/indicadores.3153d20f.js");
 
 return {definiciones};
 }});
@@ -170,12 +170,6 @@ const anio = 2024;
 return {definicion,anio};
 }});
 
-define({id: "7b8b3fda", inputs: ["draw_mapa","Generators"], outputs: ["mapa_actual","municipio_actual"], body: (draw_mapa,Generators) => {
-const mapa_actual = draw_mapa("2024");
-const municipio_actual = Generators.input(mapa_actual);
-return {mapa_actual,municipio_actual};
-}});
-
 define({id: "c3de57b2", inputs: ["Plot","d3"], outputs: ["leyenda_lineal"], body: (Plot,d3) => {
 function leyenda_lineal(color_definicion, format) {
   return Plot.legend({
@@ -192,15 +186,16 @@ function leyenda_lineal(color_definicion, format) {
 return {leyenda_lineal};
 }});
 
-define({id: "642b511c", inputs: ["datos","indicador","d3","definiciones","htl"], outputs: ["municipio_seleccion"], body: (datos,indicador,d3,definiciones,htl) => {
+define({id: "456c8599", inputs: ["datos","indicador","d3","definicion","htl"], outputs: ["municipio_seleccion"], body: (datos,indicador,d3,definicion,htl) => {
 function municipio_seleccion(municipio, tipo) {
   if (municipio) {
     const valor = datos[municipio.id][tipo][indicador];
     const meta = datos[municipio.id].municipio;
-    const format = d3.format(definiciones[indicador].format);
+    const format = d3.format(tipo == "diferencia" ? "+" : "" + definicion.format);
     return htl.html`<mensaje>
       <valor>${format(valor)}</valor>
-      <municipio>${meta.municipio}</municipio>
+      <unidad>${definicion.unidad}</unidad>
+      <municipio><span>en </span>${meta.municipio}</municipio>
       <departamento>${meta.departamento}</departamento>
     </mensaje>`;
   } else {
@@ -210,8 +205,8 @@ function municipio_seleccion(municipio, tipo) {
 return {municipio_seleccion};
 }});
 
-define({id: "e2dfdd16", inputs: ["Plot","features","definicion","datos","indicador","colors"], outputs: ["draw_mapa"], body: (Plot,features,definicion,datos,indicador,colors) => {
-function draw_mapa(tipo) {
+define({id: "e150b185", inputs: ["Plot","features","datos","indicador","colors"], outputs: ["draw_mapa"], body: (Plot,features,datos,indicador,colors) => {
+function draw_mapa(tipo, color_definicion) {
   const mapa = Plot.plot({
     marginTop: 30,
     marginBottom: 0,
@@ -224,7 +219,7 @@ function draw_mapa(tipo) {
     },
     color: {
       interpolate: "hcl",
-      ...definicion[tipo],
+      ...color_definicion,
     },
 
     marks: [
@@ -252,33 +247,49 @@ function draw_mapa(tipo) {
 return {draw_mapa};
 }});
 
-define({id: "cadb15f8", inputs: ["draw_mapa","Generators"], outputs: ["mapa_diferencia","municipio_diferencia"], body: (draw_mapa,Generators) => {
-const mapa_diferencia = draw_mapa("diferencia");
+define({id: "8d37328f", inputs: ["draw_mapa","definicion","Generators"], outputs: ["mapa_actual","municipio_actual"], body: (draw_mapa,definicion,Generators) => {
+const mapa_actual = draw_mapa("2024", definicion.estado);
+const municipio_actual = Generators.input(mapa_actual);
+return {mapa_actual,municipio_actual};
+}});
+
+define({id: "154cd381", inputs: ["draw_mapa","definicion","Generators"], outputs: ["mapa_previo","municipio_previo"], body: (draw_mapa,definicion,Generators) => {
+const mapa_previo = draw_mapa("2012", definicion.estado);
+const municipio_previo = Generators.input(mapa_previo);
+return {mapa_previo,municipio_previo};
+}});
+
+define({id: "e3283b37", inputs: ["draw_mapa","definicion","Generators"], outputs: ["mapa_diferencia","municipio_diferencia"], body: (draw_mapa,definicion,Generators) => {
+const mapa_diferencia = draw_mapa("diferencia", definicion.diferencia);
 const municipio_diferencia = Generators.input(mapa_diferencia);
 return {mapa_diferencia,municipio_diferencia};
 }});
 
-define({id: "d6d79296", inputs: ["definicion","leyenda_lineal","htl","municipio_seleccion"], outputs: ["draw_card"], body: (definicion,leyenda_lineal,htl,municipio_seleccion) => {
-function draw_card(tipo, mapa, municipio, titulo) {
-  if (Object.keys(definicion).includes(tipo)) {
-    const leyenda = leyenda_lineal(definicion[tipo], definicion.format);
+define({id: "0b34a9e5", inputs: ["definicion","leyenda_lineal","htl","municipio_seleccion"], outputs: ["draw_card"], body: (definicion,leyenda_lineal,htl,municipio_seleccion) => {
+function draw_card(titulo, subtitulo, color_definicion, mapa, municipio, tipo) {
+  if (definicion.disponibles.includes(tipo)) {
+    const leyenda = leyenda_lineal(color_definicion, definicion.format);
     return htl.html`<estado>
-      <titulo>${titulo}</titulo>
-      <leyenda>${leyenda}</leyenda>
-      <mapa>
-        ${mapa}
-        ${municipio_seleccion(municipio, tipo)}
-      </mapa>
-    </estado>`;
+    <titulo>${titulo}</titulo>
+    <subtitulo>${subtitulo}</subtitulo>
+    <leyenda>${leyenda}</leyenda>
+    <mapa>
+      ${mapa}
+      ${municipio_seleccion(municipio, tipo)}
+    </mapa>
+  </estado>`;
   } else {
     return htl.html`<div></div>`;
-    return htl.html`<estado>
-      <titulo>${titulo}</titulo>
-      <subtitulo>sin datos</subtitulo>
-    </estado>`;
   }
 }
 return {draw_card};
+}});
+
+define({id: "d1275129", inputs: ["definicion","htl"], outputs: ["disclaimer"], body: (definicion,htl) => {
+const disclaimer = definicion.disponibles.includes(2012)
+  ? htl.html`<div></div>`
+  : htl.html`<disclaimer>( Sin datos para 2012 )</disclaimer>`;
+return {disclaimer};
 }});
 
 define({id: "ff13d4c3", mode: "inline", inputs: ["indicador_input","display"], body: async (indicador_input,display) => {
@@ -299,15 +310,27 @@ definicion.texto
 ))
 }});
 
-define({id: "20606daf", mode: "inline", inputs: ["draw_card","mapa_actual","municipio_actual","display"], body: async (draw_card,mapa_actual,municipio_actual,display) => {
+define({id: "4a4bbe42", mode: "inline", inputs: ["draw_card","definicion","mapa_actual","municipio_actual","display"], body: async (draw_card,definicion,mapa_actual,municipio_actual,display) => {
 display(await(
-draw_card("2024", mapa_actual, municipio_actual, "en 2024")
+draw_card("en 2024", "con datos del Censo 2024", definicion.estado, mapa_actual, municipio_actual, 2024)
 ))
 }});
 
-define({id: "f3ea2a61", mode: "inline", inputs: ["draw_card","mapa_diferencia","municipio_diferencia","display"], body: async (draw_card,mapa_diferencia,municipio_diferencia,display) => {
+define({id: "4405a285", mode: "inline", inputs: ["draw_card","definicion","mapa_previo","municipio_previo","display"], body: async (draw_card,definicion,mapa_previo,municipio_previo,display) => {
 display(await(
-draw_card("diferencia", mapa_diferencia, municipio_diferencia, "desde 2012")
+draw_card("en 2012", "con datos del Censo 2012", definicion.estado, mapa_previo, municipio_previo, 2012)
+))
+}});
+
+define({id: "418a5263", mode: "inline", inputs: ["draw_card","definicion","mapa_diferencia","municipio_diferencia","display"], body: async (draw_card,definicion,mapa_diferencia,municipio_diferencia,display) => {
+display(await(
+draw_card("cambios desde 2012", "2024 - 2012", definicion.diferencia, mapa_diferencia, municipio_diferencia, "diferencia")
+))
+}});
+
+define({id: "c9479b65", mode: "inline", inputs: ["disclaimer","display"], body: async (disclaimer,display) => {
+display(await(
+disclaimer
 ))
 }});
 
@@ -316,18 +339,20 @@ draw_card("diferencia", mapa_diferencia, municipio_diferencia, "desde 2012")
 <body>
 <div id="observablehq-center">
 <main id="observablehq-main" class="observablehq">
-<link rel="stylesheet" type="text/css" href="./_file/index.22ab60f4.css">
+<link rel="stylesheet" type="text/css" href="./_file/index.88eb0231.css">
 <div class="observablehq observablehq--block"><!--:af6cdc76:--></div>
 <div class="observablehq observablehq--block"><!--:4fc3cdab:--></div>
 <div class="observablehq observablehq--block"><!--:e3ce09ff:--></div>
 <div class="observablehq observablehq--block"><!--:04e18386:--></div>
 <div class="observablehq observablehq--block"><!--:20fa5508:--></div>
-<div class="observablehq observablehq--block"><!--:7b8b3fda:--></div>
 <div class="observablehq observablehq--block"><!--:c3de57b2:--></div>
-<div class="observablehq observablehq--block"><!--:642b511c:--></div>
-<div class="observablehq observablehq--block"><!--:e2dfdd16:--></div>
-<div class="observablehq observablehq--block"><!--:cadb15f8:--></div>
-<div class="observablehq observablehq--block"><!--:d6d79296:--></div>
+<div class="observablehq observablehq--block"><!--:456c8599:--></div>
+<div class="observablehq observablehq--block"><!--:e150b185:--></div>
+<div class="observablehq observablehq--block"><!--:8d37328f:--></div>
+<div class="observablehq observablehq--block"><!--:154cd381:--></div>
+<div class="observablehq observablehq--block"><!--:e3283b37:--></div>
+<div class="observablehq observablehq--block"><!--:0b34a9e5:--></div>
+<div class="observablehq observablehq--block"><!--:d1275129:--></div>
 <menu>
   <titulo>Indicadores de desarrollo basados en el Censo 2024</titulo>
   <observablehq-loading></observablehq-loading><!--:ff13d4c3:-->
@@ -340,12 +365,16 @@ draw_card("diferencia", mapa_diferencia, municipio_diferencia, "desde 2012")
     </header>
     <cards>
       <card>
-      <observablehq-loading></observablehq-loading><!--:20606daf:-->
+      <observablehq-loading></observablehq-loading><!--:4a4bbe42:-->
       </card>
       <card>
-      <observablehq-loading></observablehq-loading><!--:f3ea2a61:-->
+      <observablehq-loading></observablehq-loading><!--:4405a285:-->
+      </card>
+      <card>
+      <observablehq-loading></observablehq-loading><!--:418a5263:-->
       </card>
     </cards>
+    <observablehq-loading></observablehq-loading><!--:c9479b65:-->
   </contenido>
 </cuerpo>
 <footer>
