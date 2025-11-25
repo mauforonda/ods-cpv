@@ -150,14 +150,14 @@ estado {
         font-weight: 500;
       }
       municipio {
-        span {
-          display: inline;
-          font-size: 0.7rem;
-          font-weight: 500;  
-        }
         max-width: 200px;
         font-size: 0.8rem;
         font-weight: 600;
+        span {
+          display: inline;
+          font-size: 0.7rem;
+          font-weight: 500;
+        }
       }
       departamento {
         font-size: 0.7rem;
@@ -171,7 +171,7 @@ disclaimer {
   font-style: italic;
   font-size: 0.7rem;
   color: var(--strong);
-  opacity: .7;
+  opacity: 0.7;
   max-width: 600px;
 }
 
@@ -197,12 +197,11 @@ footer {
 
 @media screen and (max-width: 768px) {
   mensaje {
-    right: 2% !important;
+    right: 5% !important;
     valor {
-      font-size: 2rem !important;
+      font-size: 3rem !important;
     }
     municipio {
-      max-width: 150px !important;
       font-size: 0.7rem !important;
     }
   }
