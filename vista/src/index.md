@@ -12,6 +12,16 @@ sidebar: false
 >
 
 ```js
+const dark = Generators.dark();
+```
+
+```js
+const colors = {
+  background: dark ? "#242323" : "#fbfbfb",
+}
+```
+
+```js
 // Cargar datDatos de indicadoreos
 
 // Definiciones de indicadores
@@ -77,25 +87,6 @@ const features = (async () => {
   );
   return municipios;
 })();
-
-const colors = {
-  frame: {
-    background: "#fff",
-    light: "#c6c6c6",
-    mid: "#919191",
-    dark: "#111111",
-  },
-  fill: {
-    lighter: "#e8f3ff",
-    light: "#b2d5f9",
-    dark: "#4c97f4",
-  },
-  map: {
-    linear: "GnBu",
-    diverging: "BuYlRd",
-    a: ["#dfe8f3", "#a5d7ea", "#5ec7cd", "#27b598", "#3b9d50", "#0bdbab"],
-  },
-};
 ```
 
 ```js
@@ -166,7 +157,7 @@ function draw_mapa(tipo, color_definicion) {
       Plot.geo(features.features, {
         fill: (d) => datos[d.id][tipo][indicador],
         fillOpacity: 0.8,
-        stroke: colors.frame.background,
+        stroke: colors.background,
         strokeWidth: 0.4,
       }),
 
@@ -175,7 +166,7 @@ function draw_mapa(tipo, color_definicion) {
         Plot.pointer(
           Plot.centroid({
             fill: (d) => datos[d.id][tipo][indicador],
-            stroke: colors.frame.background,
+            stroke: colors.background,
             strokeWidth: 2.5,
           })
         )
