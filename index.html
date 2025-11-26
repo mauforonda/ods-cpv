@@ -15,7 +15,7 @@
 <link rel="modulepreload" href="./_observablehq/client.ce20a9f1.js">
 <link rel="modulepreload" href="./_observablehq/runtime.e080113b.js">
 <link rel="modulepreload" href="./_observablehq/stdlib.73a8ec5a.js">
-<link rel="modulepreload" href="./_import/components/indicadores.3153d20f.js">
+<link rel="modulepreload" href="./_import/components/indicadores.adf21d84.js">
 <link rel="modulepreload" href="./_npm/d3@7.9.0/e780feca.js">
 <link rel="modulepreload" href="./_npm/htl@0.3.1/72f4716c.js">
 <link rel="modulepreload" href="./_observablehq/stdlib/inputs.4ef1d259.js">
@@ -63,7 +63,7 @@
 import {define} from "./_observablehq/client.ce20a9f1.js";
 import {registerFile} from "./_observablehq/stdlib.73a8ec5a.js";
 
-registerFile("./municipios.json", {"name":"./municipios.json","mimeType":"application/json","path":"./_file/municipios.c9eb137b.json","lastModified":1764105412646,"size":184233});
+registerFile("./municipios.json", {"name":"./municipios.json","mimeType":"application/json","path":"./_file/municipios.c9eb137b.json","lastModified":1764175652451,"size":184233});
 
 define({id: "af6cdc76", inputs: ["d3"], outputs: ["indicadores","datos"], body: (d3) => {
 // Cargar datDatos de indicadoreos
@@ -111,7 +111,7 @@ return {indicadores,datos};
 }});
 
 define({id: "4fc3cdab", outputs: ["definiciones"], body: async () => {
-const {definiciones} = await import("./_import/components/indicadores.3153d20f.js");
+const {definiciones} = await import("./_import/components/indicadores.adf21d84.js");
 
 return {definiciones};
 }});

@@ -295,6 +295,7 @@ export const definiciones = {
       domain: [-30, 55],
     },
     format: ".0f",
+    unidad: "de 100 personas",
   },
   "Porcentaje de la población que utiliza combustibles limpios (no sólidos) para cocinar.":
     {
