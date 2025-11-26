@@ -63,7 +63,19 @@
 import {define} from "./_observablehq/client.ce20a9f1.js";
 import {registerFile} from "./_observablehq/stdlib.73a8ec5a.js";
 
-registerFile("./municipios.json", {"name":"./municipios.json","mimeType":"application/json","path":"./_file/municipios.c9eb137b.json","lastModified":1764175652451,"size":184233});
+registerFile("./municipios.json", {"name":"./municipios.json","mimeType":"application/json","path":"./_file/municipios.c9eb137b.json","lastModified":1764186080292,"size":184233});
+
+define({id: "eecc0d5c", inputs: ["Generators"], outputs: ["dark"], body: (Generators) => {
+const dark = Generators.dark();
+return {dark};
+}});
+
+define({id: "e96d5f74", inputs: ["dark"], outputs: ["colors"], body: (dark) => {
+const colors = {
+  background: dark ? "#242323" : "#fbfbfb",
+}
+return {colors};
+}});
 
 define({id: "af6cdc76", inputs: ["d3"], outputs: ["indicadores","datos"], body: (d3) => {
 // Cargar datDatos de indicadoreos
@@ -116,7 +128,7 @@ const {definiciones} = await import("./_import/components/indicadores.adf21d84.j
 return {definiciones};
 }});
 
-define({id: "e3ce09ff", inputs: ["FileAttachment","topojson","datos","d3"], outputs: ["features","colors"], body: (FileAttachment,topojson,datos,d3) => {
+define({id: "246b763d", inputs: ["FileAttachment","topojson","datos","d3"], outputs: ["features"], body: (FileAttachment,topojson,datos,d3) => {
 // Geometrías de municipios
 const features = (async () => {
   const topo = await FileAttachment("./municipios.json").json();
@@ -134,26 +146,7 @@ const features = (async () => {
   );
   return municipios;
 })();
-
-const colors = {
-  frame: {
-    background: "#fff",
-    light: "#c6c6c6",
-    mid: "#919191",
-    dark: "#111111",
-  },
-  fill: {
-    lighter: "#e8f3ff",
-    light: "#b2d5f9",
-    dark: "#4c97f4",
-  },
-  map: {
-    linear: "GnBu",
-    diverging: "BuYlRd",
-    a: ["#dfe8f3", "#a5d7ea", "#5ec7cd", "#27b598", "#3b9d50", "#0bdbab"],
-  },
-};
-return {features,colors};
+return {features};
 }});
 
 define({id: "04e18386", inputs: ["Inputs","indicadores","definiciones","Generators"], outputs: ["indicador_input","indicador"], body: (Inputs,indicadores,definiciones,Generators) => {
@@ -207,7 +200,7 @@ function municipio_seleccion(municipio, tipo) {
 return {municipio_seleccion};
 }});
 
-define({id: "e150b185", inputs: ["Plot","features","datos","indicador","colors"], outputs: ["draw_mapa"], body: (Plot,features,datos,indicador,colors) => {
+define({id: "084370c9", inputs: ["Plot","features","datos","indicador","colors"], outputs: ["draw_mapa"], body: (Plot,features,datos,indicador,colors) => {
 function draw_mapa(tipo, color_definicion) {
   const mapa = Plot.plot({
     marginTop: 30,
@@ -228,7 +221,7 @@ function draw_mapa(tipo, color_definicion) {
       Plot.geo(features.features, {
         fill: (d) => datos[d.id][tipo][indicador],
         fillOpacity: 0.8,
-        stroke: colors.frame.background,
+        stroke: colors.background,
         strokeWidth: 0.4,
       }),
 
@@ -237,7 +230,7 @@ function draw_mapa(tipo, color_definicion) {
         Plot.pointer(
           Plot.centroid({
             fill: (d) => datos[d.id][tipo][indicador],
-            stroke: colors.frame.background,
+            stroke: colors.background,
             strokeWidth: 2.5,
           })
         )
@@ -347,15 +340,17 @@ disclaimer
 <body>
 <div id="observablehq-center">
 <main id="observablehq-main" class="observablehq">
-<link rel="stylesheet" type="text/css" href="./_file/index.bae3cb89.css">
+<link rel="stylesheet" type="text/css" href="./_file/index.83e12efb.css">
+<div class="observablehq observablehq--block"><!--:eecc0d5c:--></div>
+<div class="observablehq observablehq--block"><!--:e96d5f74:--></div>
 <div class="observablehq observablehq--block"><!--:af6cdc76:--></div>
 <div class="observablehq observablehq--block"><!--:4fc3cdab:--></div>
-<div class="observablehq observablehq--block"><!--:e3ce09ff:--></div>
+<div class="observablehq observablehq--block"><!--:246b763d:--></div>
 <div class="observablehq observablehq--block"><!--:04e18386:--></div>
 <div class="observablehq observablehq--block"><!--:20fa5508:--></div>
 <div class="observablehq observablehq--block"><!--:c3de57b2:--></div>
 <div class="observablehq observablehq--block"><!--:899678b8:--></div>
-<div class="observablehq observablehq--block"><!--:e150b185:--></div>
+<div class="observablehq observablehq--block"><!--:084370c9:--></div>
 <div class="observablehq observablehq--block"><!--:8d37328f:--></div>
 <div class="observablehq observablehq--block"><!--:154cd381:--></div>
 <div class="observablehq observablehq--block"><!--:e3283b37:--></div>
