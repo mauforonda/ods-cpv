@@ -63,7 +63,7 @@
 import {define} from "./_observablehq/client.ce20a9f1.js";
 import {registerFile} from "./_observablehq/stdlib.73a8ec5a.js";
 
-registerFile("./municipios.json", {"name":"./municipios.json","mimeType":"application/json","path":"./_file/municipios.c9eb137b.json","lastModified":1764289548988,"size":184233});
+registerFile("./municipios.json", {"name":"./municipios.json","mimeType":"application/json","path":"./_file/municipios.c9eb137b.json","lastModified":1764291267035,"size":184233});
 
 define({id: "eecc0d5c", inputs: ["Generators"], outputs: ["dark"], body: (Generators) => {
 const dark = Generators.dark();
@@ -292,10 +292,10 @@ function municipio_seleccion(municipio, tipo) {
 return {municipio_seleccion};
 }});
 
-define({id: "8b6ac28a", inputs: ["Plot","features","datos","indicador","colors"], outputs: ["draw_mapa"], body: (Plot,features,datos,indicador,colors) => {
+define({id: "92514cc4", inputs: ["Plot","features","datos","indicador","colors"], outputs: ["draw_mapa"], body: (Plot,features,datos,indicador,colors) => {
 function draw_mapa(tipo, color_definicion) {
   const mapa = Plot.plot({
-    marginTop: 30,
+    marginTop: 15,
     marginBottom: 0,
     height: 500,
     width: 500,
@@ -417,7 +417,7 @@ const disclaimer = definicion.disponibles.includes(2012)
 return {disclaimer};
 }});
 
-define({id: "8c84a110", inputs: ["bins","indicador","colors","Plot"], outputs: ["binPlot"], body: (bins,indicador,colors,Plot) => {
+define({id: "a584bc1a", inputs: ["bins","indicador","colors","Plot"], outputs: ["binPlot"], body: (bins,indicador,colors,Plot) => {
 function binPlot(tipo, color_definicion) {
   const x_domain = bins[indicador][tipo].extent;
   const inset = (x_domain[1] - x_domain[0]) / 100;
@@ -438,10 +438,10 @@ function binPlot(tipo, color_definicion) {
   };
 
   return Plot.plot({
-    marginTop: 40,
+    marginTop: 5,
     marginLeft: 10,
-    marginRight: 10,
-    marginBottom: 20,
+    marginRight: 30,
+    marginBottom: 35,
     height: 120,
     width: 260,
     style: {
@@ -454,7 +454,7 @@ function binPlot(tipo, color_definicion) {
     },
     y: {
       ...axisParams,
-      axis: "right",
+      axis: null,
       domain: [0, bins[indicador].max_count],
     },
     color: {
@@ -476,9 +476,11 @@ function binPlot(tipo, color_definicion) {
         bins[indicador][tipo].bins,
         Plot.pointerX({
           px: "mid",
-          frameAnchor: "top",
-          text: (d) => `${d.count} municipios\nentre ${d.x0} y ${d.x1}`,
-          dy: -30,
+          frameAnchor: "bottom",
+          text: (d) => `${d.count} municipios entre ${d.x0} y ${d.x1}`,
+          dy: 30,
+          fontStyle: "italic",
+          fontFamily: "serif",
           lineHeight: 1.2,
         })
       ),
@@ -548,7 +550,7 @@ disclaimer
 <div class="observablehq observablehq--block"><!--:20fa5508:--></div>
 <div class="observablehq observablehq--block"><!--:3930c542:--></div>
 <div class="observablehq observablehq--block"><!--:899678b8:--></div>
-<div class="observablehq observablehq--block"><!--:8b6ac28a:--></div>
+<div class="observablehq observablehq--block"><!--:92514cc4:--></div>
 <div class="observablehq observablehq--block"><!--:8d37328f:--></div>
 <div class="observablehq observablehq--block"><!--:443ad38c:--></div>
 <div class="observablehq observablehq--block"><!--:154cd381:--></div>
@@ -558,7 +560,7 @@ disclaimer
 <div class="observablehq observablehq--block"><!--:b6e70d63:--></div>
 <div class="observablehq observablehq--block"><!--:e0450c11:--></div>
 <div class="observablehq observablehq--block"><!--:d1275129:--></div>
-<div class="observablehq observablehq--block"><!--:8c84a110:--></div>
+<div class="observablehq observablehq--block"><!--:a584bc1a:--></div>
 <menu>
   <titulo>Indicadores de desarrollo basados en el Censo 2024</titulo>
   <observablehq-loading></observablehq-loading><!--:ff13d4c3:-->
