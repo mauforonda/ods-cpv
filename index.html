@@ -15,7 +15,7 @@
 <link rel="modulepreload" href="./_observablehq/client.ce20a9f1.js">
 <link rel="modulepreload" href="./_observablehq/runtime.e080113b.js">
 <link rel="modulepreload" href="./_observablehq/stdlib.73a8ec5a.js">
-<link rel="modulepreload" href="./_import/components/indicadores.26fd93ad.js">
+<link rel="modulepreload" href="./_import/components/indicadores.254ea6bb.js">
 <link rel="modulepreload" href="./_npm/d3@7.9.0/e780feca.js">
 <link rel="modulepreload" href="./_npm/htl@0.3.1/72f4716c.js">
 <link rel="modulepreload" href="./_observablehq/stdlib/inputs.4ef1d259.js">
@@ -63,17 +63,18 @@
 import {define} from "./_observablehq/client.ce20a9f1.js";
 import {registerFile} from "./_observablehq/stdlib.73a8ec5a.js";
 
-registerFile("./municipios.json", {"name":"./municipios.json","mimeType":"application/json","path":"./_file/municipios.c9eb137b.json","lastModified":1764347794934,"size":184233});
+registerFile("./municipios.json", {"name":"./municipios.json","mimeType":"application/json","path":"./_file/municipios.c9eb137b.json","lastModified":1764365590847,"size":184233});
 
 define({id: "eecc0d5c", inputs: ["Generators"], outputs: ["dark"], body: (Generators) => {
 const dark = Generators.dark();
 return {dark};
 }});
 
-define({id: "cb634678", inputs: ["dark"], outputs: ["colors"], body: (dark) => {
+define({id: "38c45561", inputs: ["dark"], outputs: ["colors"], body: (dark) => {
 const colors = {
   background: dark ? "#242323" : "#fbfbfb",
-  mid: dark ? "#bdbdbdff" : "#aeaeaeff",
+  mid: dark ? "#bdbdbdff" : "#989898ff",
+  strong: dark ? "#f0f0f0" : "#494949",
 };
 return {colors};
 }});
@@ -211,7 +212,7 @@ return {indicadores,raw,datos,bins};
 }});
 
 define({id: "4fc3cdab", outputs: ["definiciones"], body: async () => {
-const {definiciones} = await import("./_import/components/indicadores.26fd93ad.js");
+const {definiciones} = await import("./_import/components/indicadores.254ea6bb.js");
 
 return {definiciones};
 }});
@@ -381,7 +382,7 @@ const municipio_integrado =
 return {municipio_integrado};
 }});
 
-define({id: "e0450c11", inputs: ["definicion","leyenda_lineal","htl","municipio_seleccion"], outputs: ["draw_card"], body: (definicion,leyenda_lineal,htl,municipio_seleccion) => {
+define({id: "3a78d136", inputs: ["definicion","leyenda_lineal","htl","municipio_seleccion"], outputs: ["draw_card"], body: (definicion,leyenda_lineal,htl,municipio_seleccion) => {
 function draw_card(
   titulo,
   subtitulo,
@@ -394,15 +395,19 @@ function draw_card(
 ) {
   if (definicion.disponibles.includes(tipo)) {
     const leyenda = leyenda_lineal(color_definicion, definicion.format);
-    return htl.html`<estado>
-    <titulo>${titulo}</titulo>
-    <subtitulo>${subtitulo}</subtitulo>
-    ${binplot}
+    return htl.html`<card>
+    <card_head>
+      <titulo>${titulo}</titulo>
+      <subtitulo>${subtitulo}</subtitulo>
+    </card_head>
+    <card_legend>
+      ${binplot}
+    </card_legend>
     <mapa>
       ${mapa}
       ${municipio_seleccion(municipio, tipo)}
     </mapa>
-  </estado>`;
+  </card>`;
   } else {
     return htl.html`<div></div>`;
   }
@@ -417,7 +422,7 @@ const disclaimer = definicion.disponibles.includes(2012)
 return {disclaimer};
 }});
 
-define({id: "29b864dd", inputs: ["bins","indicador","colors","Plot"], outputs: ["binPlot"], body: (bins,indicador,colors,Plot) => {
+define({id: "65c4b122", inputs: ["bins","indicador","colors","Plot"], outputs: ["binPlot"], body: (bins,indicador,colors,Plot) => {
 function binPlot(tipo, color_definicion) {
   const x_domain = bins[indicador][tipo].extent;
   const inset = (x_domain[1] - x_domain[0]) / 100;
@@ -438,10 +443,10 @@ function binPlot(tipo, color_definicion) {
   };
 
   return Plot.plot({
-    marginTop: 5,
+    marginTop: 10,
     marginLeft: 10,
-    marginRight: 30,
-    marginBottom: 35,
+    marginRight: 10,
+    marginBottom: 20,
     height: 120,
     width: 260,
     style: {
@@ -455,7 +460,7 @@ function binPlot(tipo, color_definicion) {
     y: {
       ...axisParams,
       axis: null,
-      domain: [0, bins[indicador].max_count],
+      domain: [0, bins[indicador].max_count * 1.1],
     },
     color: {
       interpolate: "hcl",
@@ -476,12 +481,13 @@ function binPlot(tipo, color_definicion) {
         bins[indicador][tipo].bins,
         Plot.pointerX({
           px: "mid",
-          frameAnchor: "bottom",
+          frameAnchor: "top",
           text: (d) => `${d.count} municipios entre ${d.x0} y ${d.x1}`,
-          dy: 30,
-          fontStyle: "italic",
+          dy: -10,
+          fontSize: 11,
           fontFamily: "serif",
-          lineHeight: 1.2,
+          fill: colors.strong,
+          fillOpacity: .7
         })
       ),
       Plot.ruleY([0], {
@@ -535,14 +541,20 @@ disclaimer
 ))
 }});
 
+define({id: "49104d70", inputs: ["definiciones","display"], body: async (definiciones,display) => {
+display(await(
+console.log(definiciones)
+))
+}});
+
 </script>
 </head>
 <body>
 <div id="observablehq-center">
 <main id="observablehq-main" class="observablehq">
-<link rel="stylesheet" type="text/css" href="./_file/index.581f9ab6.css">
+<link rel="stylesheet" type="text/css" href="./_file/index.57384466.css">
 <div class="observablehq observablehq--block"><!--:eecc0d5c:--></div>
-<div class="observablehq observablehq--block"><!--:cb634678:--></div>
+<div class="observablehq observablehq--block"><!--:38c45561:--></div>
 <div class="observablehq observablehq--block"><!--:06b7a24d:--></div>
 <div class="observablehq observablehq--block"><!--:4fc3cdab:--></div>
 <div class="observablehq observablehq--block"><!--:246b763d:--></div>
@@ -558,9 +570,9 @@ disclaimer
 <div class="observablehq observablehq--block"><!--:e3283b37:--></div>
 <div class="observablehq observablehq--block"><!--:34d3a4f7:--></div>
 <div class="observablehq observablehq--block"><!--:b6e70d63:--></div>
-<div class="observablehq observablehq--block"><!--:e0450c11:--></div>
+<div class="observablehq observablehq--block"><!--:3a78d136:--></div>
 <div class="observablehq observablehq--block"><!--:d1275129:--></div>
-<div class="observablehq observablehq--block"><!--:29b864dd:--></div>
+<div class="observablehq observablehq--block"><!--:65c4b122:--></div>
 <menu>
   <titulo>Indicadores de desarrollo basados en el Censo 2024</titulo>
   <observablehq-loading></observablehq-loading><!--:ff13d4c3:-->
@@ -572,15 +584,9 @@ disclaimer
       <subtitulo><observablehq-loading></observablehq-loading><!--:9b2015d1:--></subtitulo>
     </header>
     <cards>
-      <card>
       <observablehq-loading></observablehq-loading><!--:eb2b2a1d:-->
-      </card>
-      <card>
       <observablehq-loading></observablehq-loading><!--:8dbaee82:-->
-      </card>
-      <card>
       <observablehq-loading></observablehq-loading><!--:c710d75c:-->
-      </card>
     </cards>
     <observablehq-loading></observablehq-loading><!--:c9479b65:-->
   </contenido>
@@ -590,6 +596,7 @@ disclaimer
   Estimaciones del <a href="https://fichas.ine.gob.bo/#/web/ods-cpv" target="_blank" rel="noopener noreferrer">Instituto Nacional de Estadística</a>, <a href="https://github.com/mauforonda/ods-cpv" target="_blank" rel="noopener noreferrer">descargadas y visualizadas</a> por <a href="https://mauforonda.github.io/" target="_blank" rel="noopener noreferrer">Mauricio Foronda</a>
   </fuente>
 </footer>
+<div class="observablehq observablehq--block"><observablehq-loading></observablehq-loading><!--:49104d70:--></div>
 </main>
 </div>
 </body>
