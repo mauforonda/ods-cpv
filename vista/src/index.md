@@ -231,7 +231,7 @@ function municipio_seleccion(municipio, tipo) {
 ```js
 function draw_mapa(tipo, color_definicion) {
   const mapa = Plot.plot({
-    marginTop: 30,
+    marginTop: 15,
     marginBottom: 0,
     height: 500,
     width: 500,
@@ -364,10 +364,10 @@ function binPlot(tipo, color_definicion) {
   };
 
   return Plot.plot({
-    marginTop: 40,
+    marginTop: 5,
     marginLeft: 10,
-    marginRight: 10,
-    marginBottom: 20,
+    marginRight: 30,
+    marginBottom: 35,
     height: 120,
     width: 260,
     style: {
@@ -380,7 +380,7 @@ function binPlot(tipo, color_definicion) {
     },
     y: {
       ...axisParams,
-      axis: "right",
+      axis: null,
       domain: [0, bins[indicador].max_count],
     },
     color: {
@@ -402,9 +402,11 @@ function binPlot(tipo, color_definicion) {
         bins[indicador][tipo].bins,
         Plot.pointerX({
           px: "mid",
-          frameAnchor: "top",
-          text: (d) => `${d.count} municipios\nentre ${d.x0} y ${d.x1}`,
-          dy: -30,
+          frameAnchor: "bottom",
+          text: (d) => `${d.count} municipios entre ${d.x0} y ${d.x1}`,
+          dy: 30,
+          fontStyle: "italic",
+          fontFamily: "serif",
           lineHeight: 1.2,
         })
       ),
