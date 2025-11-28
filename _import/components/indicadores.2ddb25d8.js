@@ -5,6 +5,7 @@ export const definiciones = {
         "Porcentaje de mujeres de 15 a 49 años de edad que tuvieron hijos durante los últimos cinco años y cuyo parto fue atendido por personal de salud calificado",
       abreviacion: "Atención del parto",
       disponibles: [2024, 2012, "diferencia"],
+      baseline: true,
       estado: {
         range: [
           "rgba(182, 178, 235, 1)",
@@ -35,6 +36,7 @@ export const definiciones = {
       "Promedio de hijos nacidos vivos entre mujeres de 15 a 19 años de edad",
     abreviacion: "Paridez adolescente",
     disponibles: [2024, 2012, "diferencia"],
+    baseline: true,
     estado: {
       range: [
         "#69b17c",
@@ -57,6 +59,7 @@ export const definiciones = {
       "Porcentaje de la población cubierta por el Sistema Único de Salud y otros seguros de salud",
     abreviacion: "Cobertura de salud",
     disponibles: [2024],
+    baseline: false,
     estado: {
       range: [
         "rgba(182, 178, 235, 1)",
@@ -88,6 +91,7 @@ export const definiciones = {
         "Porcentaje de niñas, niños y adolescentes de 12 a 17 años de edad que completaron al menos 6 años de escolaridad",
       abreviacion: "Escolaridad 12-17 años",
       disponibles: [2024, 2012, "diferencia"],
+      baseline: true,
       estado: {
         range: [
           "rgba(182, 178, 235, 1)",
@@ -120,6 +124,7 @@ export const definiciones = {
         "Porcentaje de niños de 4 a 5 años que asisten a un establecimiento educativo",
       abreviacion: "Asistencia preescolar",
       disponibles: [2024, 2012, "diferencia"],
+      baseline: true,
       estado: {
         range: [
           "rgba(182, 178, 235, 1)",
@@ -151,6 +156,7 @@ export const definiciones = {
         "Porcentaje de población de 15 a 24 años de edad que completó la primaria",
       abreviacion: "Primaria completa 15-24 años",
       disponibles: [2024, 2012, "diferencia"],
+      baseline: true,
       estado: {
         range: [
           "rgba(182, 178, 235, 1)",
@@ -182,6 +188,7 @@ export const definiciones = {
         "Porcentaje de población de 19 o más años de edad que completó la primaria",
       abreviacion: "Primaria completa adultos",
       disponibles: [2024, 2012, "diferencia"],
+      baseline: true,
       estado: {
         range: [
           "rgba(182, 178, 235, 1)",
@@ -212,6 +219,7 @@ export const definiciones = {
       "Porcentaje de la población con acceso a una fuente mejorada de agua",
     abreviacion: "Acceso a agua",
     disponibles: [2024, 2012, "diferencia"],
+    baseline: true,
     estado: {
       range: [
         "rgba(182, 178, 235, 1)",
@@ -243,6 +251,7 @@ export const definiciones = {
         "Porcentaje de la población con acceso a saneamiento gestionado de manera segura",
       abreviacion: "Saneamiento seguro",
       disponibles: [2024, 2012, "diferencia"],
+      baseline: true,
       estado: {
         range: [
           "rgba(182, 178, 235, 1)",
@@ -271,6 +280,7 @@ export const definiciones = {
     texto: "Porcentaje de la población con acceso a energía eléctrica",
     abreviacion: "Energía eléctrica",
     disponibles: [2024, 2012, "diferencia"],
+    baseline: true,
     estado: {
       range: [
         "rgba(182, 178, 235, 1)",
@@ -303,6 +313,7 @@ export const definiciones = {
         "Porcentaje de la población que utiliza combustibles limpios (no sólidos) para cocinar",
       abreviacion: "Combustibles limpios",
       disponibles: [2024, 2012, "diferencia"],
+      baseline: true,
       estado: {
         range: [
           "rgba(182, 178, 235, 1)",
@@ -333,6 +344,7 @@ export const definiciones = {
         "Porcentaje de población de 14 o más años de edad ocupada en actividades económicas relacionadas con el turismo",
       abreviacion: "Empleo en turismo",
       disponibles: [2024, 2012, "diferencia"],
+      baseline: true,
       estado: {
         range: ["#dfe8f3", "#b6dbeb", "#69c2af", "#69b17c"],
         domain: [0, 12],
@@ -357,6 +369,7 @@ export const definiciones = {
         "Porcentaje de población de 14 o más años de edad ocupada en la industria manufacturera",
       abreviacion: "Empleo manufacturero",
       disponibles: [2024, 2012, "diferencia"],
+      baseline: true,
       estado: {
         range: ["#dfe8f3", "#b6dbeb", "#69c2af", "#69b17c"],
         domain: [0, 19],
@@ -380,6 +393,7 @@ export const definiciones = {
     texto: "Porcentaje de hogares con teléfono celular",
     abreviacion: "Telefonía celular",
     disponibles: [2024],
+    baseline: false,
     estado: {
       range: [
         "rgba(182, 178, 235, 1)",
@@ -409,6 +423,7 @@ export const definiciones = {
     texto: "Porcentaje de hogares con internet",
     abreviacion: "Internet",
     disponibles: [2024, 2012, "diferencia"],
+    baseline: true,
     estado: {
       range: [
         "rgba(182, 178, 235, 1)",
@@ -432,6 +447,7 @@ export const definiciones = {
         "Porcentaje de niñas y niños menores de 5 años de edad cuyo nacimiento fue inscrito en el registro civil boliviano",
       abreviacion: "Registro de nacimiento",
       disponibles: [2024, 2012, "diferencia"],
+      baseline: true,
       estado: {
         range: [
           "rgba(182, 178, 235, 1)",
@@ -462,6 +478,7 @@ export const definiciones = {
         "Porcentaje de mujeres de 20 a 24 años de edad que tuvieron su primer hijo antes de cumplir los 20 años",
       abreviacion: "Maternidad adolescente",
       disponibles: [2024],
+      baseline: false,
       estado: {
         range: [
           "#dde2aa",
