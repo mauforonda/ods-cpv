@@ -18,7 +18,8 @@ const dark = Generators.dark();
 ```js
 const colors = {
   background: dark ? "#242323" : "#fbfbfb",
-  mid: dark ? "#bdbdbdff" : "#aeaeaeff",
+  mid: dark ? "#bdbdbdff" : "#989898ff",
+  strong: dark ? "#f0f0f0" : "#494949",
 };
 ```
 
@@ -322,15 +323,19 @@ function draw_card(
 ) {
   if (definicion.disponibles.includes(tipo)) {
     const leyenda = leyenda_lineal(color_definicion, definicion.format);
-    return htl.html`<estado>
-    <titulo>${titulo}</titulo>
-    <subtitulo>${subtitulo}</subtitulo>
-    ${binplot}
+    return htl.html`<card>
+    <card_head>
+      <titulo>${titulo}</titulo>
+      <subtitulo>${subtitulo}</subtitulo>
+    </card_head>
+    <card_legend>
+      ${binplot}
+    </card_legend>
     <mapa>
       ${mapa}
       ${municipio_seleccion(municipio, tipo)}
     </mapa>
-  </estado>`;
+  </card>`;
   } else {
     return htl.html`<div></div>`;
   }
@@ -364,10 +369,10 @@ function binPlot(tipo, color_definicion) {
   };
 
   return Plot.plot({
-    marginTop: 5,
+    marginTop: 10,
     marginLeft: 10,
-    marginRight: 30,
-    marginBottom: 35,
+    marginRight: 10,
+    marginBottom: 20,
     height: 120,
     width: 260,
     style: {
@@ -381,7 +386,7 @@ function binPlot(tipo, color_definicion) {
     y: {
       ...axisParams,
       axis: null,
-      domain: [0, bins[indicador].max_count],
+      domain: [0, bins[indicador].max_count * 1.1],
     },
     color: {
       interpolate: "hcl",
@@ -402,12 +407,13 @@ function binPlot(tipo, color_definicion) {
         bins[indicador][tipo].bins,
         Plot.pointerX({
           px: "mid",
-          frameAnchor: "bottom",
+          frameAnchor: "top",
           text: (d) => `${d.count} municipios entre ${d.x0} y ${d.x1}`,
-          dy: 30,
-          fontStyle: "italic",
+          dy: -10,
+          fontSize: 11,
           fontFamily: "serif",
-          lineHeight: 1.2,
+          fill: colors.strong,
+          fillOpacity: .7
         })
       ),
       Plot.ruleY([0], {
@@ -429,15 +435,9 @@ function binPlot(tipo, color_definicion) {
       <subtitulo>${definicion.texto}</subtitulo>
     </header>
     <cards>
-      <card>
       ${draw_card("en 2024", "con datos del Censo 2024", definicion.estado, mapa_actual, municipio_integrado, 2024, binplot_actual)}
-      </card>
-      <card>
       ${draw_card("en 2012", "con datos del Censo 2012", definicion.estado, mapa_previo, municipio_integrado, 2012, binplot_previo)}
-      </card>
-      <card>
       ${draw_card("cambios desde 2012", "2024 - 2012", definicion.diferencia, mapa_diferencia, municipio_integrado, "diferencia", binplot_diferencia)}
-      </card>
     </cards>
     ${disclaimer}
   </contenido>
@@ -447,3 +447,7 @@ function binPlot(tipo, color_definicion) {
   Estimaciones del <a href="https://fichas.ine.gob.bo/#/web/ods-cpv" target="_blank">Instituto Nacional de Estadística</a>, <a href="https://github.com/mauforonda/ods-cpv" target="_blank">descargadas y visualizadas</a> por <a href="https://mauforonda.github.io/" target="_blank">Mauricio Foronda</a>
   </fuente>
 </footer>
+
+```js
+console.log(definiciones)
+```
