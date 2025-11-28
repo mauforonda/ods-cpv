@@ -18,23 +18,25 @@ const dark = Generators.dark();
 ```js
 const colors = {
   background: dark ? "#242323" : "#fbfbfb",
-}
+  mid: dark ? "#bdbdbdff" : "#aeaeaeff",
+};
 ```
 
 ```js
 // Cargar datDatos de indicadoreos
 
 // Definiciones de indicadores
-const indicadores = d3.json(
+const indicadores = await d3.json(
   "https://raw.githubusercontent.com/mauforonda/ods-cpv/refs/heads/main/indicadores.json"
+);
+
+const raw = await d3.csv(
+  "https://raw.githubusercontent.com/mauforonda/ods-cpv/refs/heads/main/datos.csv",
+  d3.autoType
 );
 
 // Valores de indicadores por municipio
 const datos = (async () => {
-  const raw = await d3.csv(
-    "https://raw.githubusercontent.com/mauforonda/ods-cpv/refs/heads/main/datos.csv",
-    d3.autoType
-  );
   return raw.reduce((acc, obj) => {
     const munId = obj.id_municipio;
 
@@ -62,6 +64,92 @@ const datos = (async () => {
 
     return acc;
   }, {});
+})();
+
+const bins = (() => {
+  const byIndicador = d3.group(raw, (d) => d.indicador);
+  const result = {};
+
+  for (const [indicador, rows] of byIndicador) {
+    const years = definiciones[indicador].baseline
+      ? ["2012", "2024"]
+      : ["2024"];
+    const diffValues = rows.map((d) => ({
+      value: +d["2024"] - +d["2012"],
+      municipio: d.id_municipio,
+    }));
+
+    const estadoMap = rows.flatMap((d) => years.map((year) => +d[year]));
+    const diffMap = diffValues.map((d) => d.value);
+
+    const estadoBin = d3
+      .bin()
+      .domain(d3.extent(estadoMap))
+      .thresholds(15)
+      .value((d) => d.value);
+
+    const diffBin = d3
+      .bin()
+      .domain(d3.extent(diffMap))
+      .thresholds(15)
+      .value((d) => d.value);
+
+    result[indicador] = {};
+    let maxCount = 0;
+
+    for (const year of years) {
+      const values = rows.map((d) => ({
+        value: +d[year],
+        municipio: d.id_municipio,
+      }));
+      const yearBins = estadoBin(values);
+
+      const municipios = {};
+      const binSummaries = yearBins.map((b) => {
+        const binKey = `${b.x0}-${b.x1}`;
+        municipios[binKey] = b.map((d) => d.municipio);
+        maxCount = Math.max(maxCount, b.length);
+        return {
+          bin_value: binKey,
+          x0: b.x0,
+          x1: b.x1,
+          mid: (b.x0 + b.x1) / 2,
+          count: b.length,
+        };
+      });
+
+      result[indicador][year] = {
+        bins: binSummaries,
+        municipios,
+        extent: d3.extent(estadoMap),
+      };
+    }
+
+    const diffBins = diffBin(diffValues);
+    const diffMunicipios = {};
+    const diffSummaries = diffBins.map((b) => {
+      const binKey = `${b.x0}-${b.x1}`;
+      diffMunicipios[binKey] = b.map((d) => d.municipio);
+      maxCount = Math.max(maxCount, b.length);
+      return {
+        bin_value: binKey,
+        x0: b.x0,
+        x1: b.x1,
+        mid: (b.x0 + b.x1) / 2,
+        count: b.length,
+      };
+    });
+
+    result[indicador]["diferencia"] = {
+      bins: diffSummaries,
+      municipios: diffMunicipios,
+      extent: d3.extent(diffMap),
+    };
+
+    result[indicador].max_count = maxCount;
+  }
+
+  return result;
 })();
 ```
 
@@ -106,6 +194,10 @@ function leyenda_lineal(color_definicion, format) {
   return Plot.legend({
     opacity: 0.8,
     margin: 0,
+    width: 240,
+    style: {
+      color: colors.mid,
+    },
     color: {
       type: "linear",
       interpolate: "hcl",
@@ -157,6 +249,7 @@ function draw_mapa(tipo, color_definicion) {
       Plot.geo(features.features, {
         fill: (d) => datos[d.id][tipo][indicador],
         fillOpacity: 0.8,
+        // fillOpacity: (d) => (highlight[tipo].includes(d.id) ? 0.8 : 0.6),
         stroke: colors.background,
         strokeWidth: 0.4,
       }),
@@ -183,8 +276,20 @@ const municipio_actual = Generators.input(mapa_actual);
 ```
 
 ```js
+const binplot_actual = binPlot("2024", definicion.estado);
+const bin_actual = Generators.input(binplot_actual);
+```
+
+```js
 const mapa_previo = draw_mapa("2012", definicion.estado);
 const municipio_previo = Generators.input(mapa_previo);
+```
+
+```js
+const binplot_previo = definicion.baseline
+  ? binPlot("2012", definicion.estado)
+  : null;
+const bin_previo = Generators.input(binplot_previo);
 ```
 
 ```js
@@ -193,18 +298,34 @@ const municipio_diferencia = Generators.input(mapa_diferencia);
 ```
 
 ```js
+const binplot_diferencia = definicion.baseline
+  ? binPlot("diferencia", definicion.diferencia)
+  : null;
+const bin_diferencia = Generators.input(binplot_diferencia);
+```
+
+```js
 const municipio_integrado =
   municipio_actual ?? municipio_previo ?? municipio_diferencia;
 ```
 
 ```js
-function draw_card(titulo, subtitulo, color_definicion, mapa, municipio, tipo) {
+function draw_card(
+  titulo,
+  subtitulo,
+  color_definicion,
+  mapa,
+  municipio,
+  tipo,
+  binplot,
+  bin
+) {
   if (definicion.disponibles.includes(tipo)) {
     const leyenda = leyenda_lineal(color_definicion, definicion.format);
     return htl.html`<estado>
     <titulo>${titulo}</titulo>
     <subtitulo>${subtitulo}</subtitulo>
-    <leyenda>${leyenda}</leyenda>
+    ${binplot}
     <mapa>
       ${mapa}
       ${municipio_seleccion(municipio, tipo)}
@@ -222,6 +343,79 @@ const disclaimer = definicion.disponibles.includes(2012)
   : htl.html`<disclaimer>( Sin datos para 2012 )</disclaimer>`;
 ```
 
+```js
+function binPlot(tipo, color_definicion) {
+  const x_domain = bins[indicador][tipo].extent;
+  const inset = (x_domain[1] - x_domain[0]) / 100;
+  const rectParams = {
+    x1: "x0",
+    x2: "x1",
+    y: "count",
+    fillOpacity: 0.5,
+    fill: "x0",
+    stroke: colors.background,
+    mixBlendMode: "multiply",
+    insetLeft: inset,
+    insetRight: inset,
+  };
+  const axisParams = {
+    tickSize: 0,
+    label: null,
+  };
+
+  return Plot.plot({
+    marginTop: 40,
+    marginLeft: 10,
+    marginRight: 10,
+    marginBottom: 20,
+    height: 120,
+    width: 260,
+    style: {
+      color: colors.mid,
+    },
+    x: {
+      ...axisParams,
+      ticks: 5,
+      domain: x_domain,
+    },
+    y: {
+      ...axisParams,
+      axis: "right",
+      domain: [0, bins[indicador].max_count],
+    },
+    color: {
+      interpolate: "hcl",
+      ...color_definicion,
+    },
+    marks: [
+      Plot.rectY(bins[indicador][tipo].bins, {
+        ...rectParams,
+      }),
+      Plot.rectY(
+        bins[indicador][tipo].bins,
+        Plot.pointerX({
+          ...rectParams,
+          fillOpacity: 0.9,
+        })
+      ),
+      Plot.text(
+        bins[indicador][tipo].bins,
+        Plot.pointerX({
+          px: "mid",
+          frameAnchor: "top",
+          text: (d) => `${d.count} municipios\nentre ${d.x0} y ${d.x1}`,
+          dy: -30,
+          lineHeight: 1.2,
+        })
+      ),
+      Plot.ruleY([0], {
+        strokeWidth: 0.5,
+      }),
+    ],
+  });
+}
+```
+
 <menu>
   <titulo>Indicadores de desarrollo basados en el Censo 2024</titulo>
   ${indicador_input}
@@ -234,13 +428,13 @@ const disclaimer = definicion.disponibles.includes(2012)
     </header>
     <cards>
       <card>
-      ${draw_card("en 2024", "con datos del Censo 2024", definicion.estado, mapa_actual, municipio_integrado, 2024)}
+      ${draw_card("en 2024", "con datos del Censo 2024", definicion.estado, mapa_actual, municipio_integrado, 2024, binplot_actual)}
       </card>
       <card>
-      ${draw_card("en 2012", "con datos del Censo 2012", definicion.estado, mapa_previo, municipio_integrado, 2012)}
+      ${draw_card("en 2012", "con datos del Censo 2012", definicion.estado, mapa_previo, municipio_integrado, 2012, binplot_previo)}
       </card>
       <card>
-      ${draw_card("cambios desde 2012", "2024 - 2012", definicion.diferencia, mapa_diferencia, municipio_integrado, "diferencia")}
+      ${draw_card("cambios desde 2012", "2024 - 2012", definicion.diferencia, mapa_diferencia, municipio_integrado, "diferencia", binplot_diferencia)}
       </card>
     </cards>
     ${disclaimer}
