@@ -351,7 +351,7 @@ function binPlot(tipo, color_definicion) {
     x1: "x0",
     x2: "x1",
     y: "count",
-    fillOpacity: 0.5,
+    fillOpacity: 0.8,
     fill: "x0",
     stroke: colors.background,
     mixBlendMode: "multiply",
