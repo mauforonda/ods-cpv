@@ -253,6 +253,7 @@ function draw_mapa(tipo, color_definicion) {
         // fillOpacity: (d) => (highlight[tipo].includes(d.id) ? 0.8 : 0.6),
         stroke: colors.background,
         strokeWidth: 0.4,
+        mixBlendMode: dark ? "screen" : "multiply",
       }),
 
       Plot.geo(
@@ -359,7 +360,7 @@ function binPlot(tipo, color_definicion) {
     fillOpacity: 0.8,
     fill: "x0",
     stroke: colors.background,
-    mixBlendMode: "multiply",
+    mixBlendMode: dark ? "screen" : "multiply",
     insetLeft: inset,
     insetRight: inset,
   };
@@ -411,9 +412,9 @@ function binPlot(tipo, color_definicion) {
           text: (d) => `${d.count} municipios entre ${d.x0} y ${d.x1}`,
           dy: -10,
           fontSize: 11,
-          fontFamily: "serif",
+          fontFamily: "Inter",
           fill: colors.strong,
-          fillOpacity: .7
+          fillOpacity: 0.7,
         })
       ),
       Plot.ruleY([0], {
@@ -447,7 +448,3 @@ function binPlot(tipo, color_definicion) {
   Estimaciones del <a href="https://fichas.ine.gob.bo/#/web/ods-cpv" target="_blank">Instituto Nacional de Estadística</a>, <a href="https://github.com/mauforonda/ods-cpv" target="_blank">descargadas y visualizadas</a> por <a href="https://mauforonda.github.io/" target="_blank">Mauricio Foronda</a>
   </fuente>
 </footer>
-
-```js
-console.log(definiciones)
-```
