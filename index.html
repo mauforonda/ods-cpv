@@ -63,7 +63,7 @@
 import {define} from "./_observablehq/client.ce20a9f1.js";
 import {registerFile} from "./_observablehq/stdlib.73a8ec5a.js";
 
-registerFile("./municipios.json", {"name":"./municipios.json","mimeType":"application/json","path":"./_file/municipios.c9eb137b.json","lastModified":1764365590847,"size":184233});
+registerFile("./municipios.json", {"name":"./municipios.json","mimeType":"application/json","path":"./_file/municipios.c9eb137b.json","lastModified":1764508293734,"size":184233});
 
 define({id: "eecc0d5c", inputs: ["Generators"], outputs: ["dark"], body: (Generators) => {
 const dark = Generators.dark();
@@ -293,7 +293,7 @@ function municipio_seleccion(municipio, tipo) {
 return {municipio_seleccion};
 }});
 
-define({id: "92514cc4", inputs: ["Plot","features","datos","indicador","colors"], outputs: ["draw_mapa"], body: (Plot,features,datos,indicador,colors) => {
+define({id: "470d3e81", inputs: ["Plot","features","datos","indicador","colors","dark"], outputs: ["draw_mapa"], body: (Plot,features,datos,indicador,colors,dark) => {
 function draw_mapa(tipo, color_definicion) {
   const mapa = Plot.plot({
     marginTop: 15,
@@ -317,6 +317,7 @@ function draw_mapa(tipo, color_definicion) {
         // fillOpacity: (d) => (highlight[tipo].includes(d.id) ? 0.8 : 0.6),
         stroke: colors.background,
         strokeWidth: 0.4,
+        mixBlendMode: dark ? "screen" : "multiply",
       }),
 
       Plot.geo(
@@ -422,7 +423,7 @@ const disclaimer = definicion.disponibles.includes(2012)
 return {disclaimer};
 }});
 
-define({id: "65c4b122", inputs: ["bins","indicador","colors","Plot"], outputs: ["binPlot"], body: (bins,indicador,colors,Plot) => {
+define({id: "ca6ffa77", inputs: ["bins","indicador","colors","dark","Plot"], outputs: ["binPlot"], body: (bins,indicador,colors,dark,Plot) => {
 function binPlot(tipo, color_definicion) {
   const x_domain = bins[indicador][tipo].extent;
   const inset = (x_domain[1] - x_domain[0]) / 100;
@@ -433,7 +434,7 @@ function binPlot(tipo, color_definicion) {
     fillOpacity: 0.8,
     fill: "x0",
     stroke: colors.background,
-    mixBlendMode: "multiply",
+    mixBlendMode: dark ? "screen" : "multiply",
     insetLeft: inset,
     insetRight: inset,
   };
@@ -485,9 +486,9 @@ function binPlot(tipo, color_definicion) {
           text: (d) => `${d.count} municipios entre ${d.x0} y ${d.x1}`,
           dy: -10,
           fontSize: 11,
-          fontFamily: "serif",
+          fontFamily: "Inter",
           fill: colors.strong,
-          fillOpacity: .7
+          fillOpacity: 0.7,
         })
       ),
       Plot.ruleY([0], {
@@ -541,18 +542,12 @@ disclaimer
 ))
 }});
 
-define({id: "49104d70", inputs: ["definiciones","display"], body: async (definiciones,display) => {
-display(await(
-console.log(definiciones)
-))
-}});
-
 </script>
 </head>
 <body>
 <div id="observablehq-center">
 <main id="observablehq-main" class="observablehq">
-<link rel="stylesheet" type="text/css" href="./_file/index.57384466.css">
+<link rel="stylesheet" type="text/css" href="./_file/index.9bcf4f73.css">
 <div class="observablehq observablehq--block"><!--:eecc0d5c:--></div>
 <div class="observablehq observablehq--block"><!--:38c45561:--></div>
 <div class="observablehq observablehq--block"><!--:06b7a24d:--></div>
@@ -562,7 +557,7 @@ console.log(definiciones)
 <div class="observablehq observablehq--block"><!--:20fa5508:--></div>
 <div class="observablehq observablehq--block"><!--:3930c542:--></div>
 <div class="observablehq observablehq--block"><!--:899678b8:--></div>
-<div class="observablehq observablehq--block"><!--:92514cc4:--></div>
+<div class="observablehq observablehq--block"><!--:470d3e81:--></div>
 <div class="observablehq observablehq--block"><!--:8d37328f:--></div>
 <div class="observablehq observablehq--block"><!--:443ad38c:--></div>
 <div class="observablehq observablehq--block"><!--:154cd381:--></div>
@@ -572,7 +567,7 @@ console.log(definiciones)
 <div class="observablehq observablehq--block"><!--:b6e70d63:--></div>
 <div class="observablehq observablehq--block"><!--:3a78d136:--></div>
 <div class="observablehq observablehq--block"><!--:d1275129:--></div>
-<div class="observablehq observablehq--block"><!--:65c4b122:--></div>
+<div class="observablehq observablehq--block"><!--:ca6ffa77:--></div>
 <menu>
   <titulo>Indicadores de desarrollo basados en el Censo 2024</titulo>
   <observablehq-loading></observablehq-loading><!--:ff13d4c3:-->
@@ -596,7 +591,6 @@ console.log(definiciones)
   Estimaciones del <a href="https://fichas.ine.gob.bo/#/web/ods-cpv" target="_blank" rel="noopener noreferrer">Instituto Nacional de Estadística</a>, <a href="https://github.com/mauforonda/ods-cpv" target="_blank" rel="noopener noreferrer">descargadas y visualizadas</a> por <a href="https://mauforonda.github.io/" target="_blank" rel="noopener noreferrer">Mauricio Foronda</a>
   </fuente>
 </footer>
-<div class="observablehq observablehq--block"><observablehq-loading></observablehq-loading><!--:49104d70:--></div>
 </main>
 </div>
 </body>
